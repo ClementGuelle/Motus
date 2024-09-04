@@ -3,13 +3,20 @@ package src.metier;
 import java.io.FileInputStream;
 import java.util.Scanner;
 
+import src.Controleur;
+
 public class Jeu 
 {
 	/*--------------*/
 	/*    Données   */
 	/*--------------*/
 
-	private String motAChercher;
+	private final int NB_ESSAIE;
+
+	private Controleur ctrl;
+	private String     motAChercher;
+	private String[]   tabMotJoueur;
+	private boolean    partieFini;
 
 
 	/*--------------*/
@@ -19,9 +26,14 @@ public class Jeu
 	/**
 	 * Constructeur de la classe
 	 */
-	public Jeu()
+	public Jeu( Controleur ctrl )
 	{
+		this.NB_ESSAIE    = 4;
+
+		this.ctrl         = ctrl;
 		this.motAChercher = this.SelectionMotAleatoire();
+		this.tabMotJoueur = new String[NB_ESSAIE];
+		this.partieFini   = true;
 	}
 
 
@@ -164,16 +176,12 @@ public class Jeu
 						nbFoisCaratere++;
 				}
 
-				System.out.println(" nb " + motJoueur.charAt(i) + " dans le mot : " + nbFoisCaractereValide);
-
 				// Permet de calculer le nombre de fois où la lettre est bien placé
 				for (int j = 0; j < placementCaractere.length; j++)
 				{
 					if ( motJoueur.charAt(j) == motJoueur.charAt(i) && placementCaractere[j] == 'B')
 						nbFoisCaractereValide ++;
 				}
-
-				System.out.println(" nb caractere bon : " + nbFoisCaractereValide);
 
 				// Soustrait le nombre de fois que le caractere est bien placé avec le nombre de fois que le caractere existe comme ca cela permet de savoir si il est M ou I
 				if ( nbFoisCaratere > nbFoisCaractereValide )
@@ -186,8 +194,15 @@ public class Jeu
 
 		for (int i = 0; i < placementCaractere.length; i++) 
 		{
-			System.out.println(placementCaractere[i]);
+			if ( placementCaractere[i] != 'B' )
+				partieFini = false;
 		}
+
+		if ( partieFini )
+			this.ctrl.FinPartieVictoire();
+
+		if ( !partieFini && this.tabMotJoueur[this.NB_ESSAIE] != "" )
+			this.ctrl.FinPartieDefaite();
 
 		return placementCaractere;
 	}
