@@ -2,6 +2,8 @@ package src;
 
 import src.metier.Jeu;
 
+import iut.algo.Clavier;
+
 public class Controleur
 {
 
@@ -10,6 +12,7 @@ public class Controleur
 	public Controleur()
 	{
 		this.jeu = new Jeu(this);
+		this.jeu.AjoutMotListe(Clavier.lireString());
 	}
 	
 	public char[] VerifEmplacementCaratere(String mot)

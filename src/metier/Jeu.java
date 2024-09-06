@@ -1,7 +1,13 @@
 package src.metier;
 
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.util.Scanner;
+import java.io.PrintWriter;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
 
 import src.Controleur;
 
@@ -205,5 +211,39 @@ public class Jeu
 			this.ctrl.FinPartieDefaite();
 
 		return placementCaractere;
+	}
+
+	public boolean AjoutMotListe(String motAAjouter)
+	{
+		try
+		{
+			Scanner sc = new Scanner(new FileInputStream("../src/ListeMots.txt"), "UTF8");
+
+			while (sc.hasNextLine())
+			{
+				if ( motAAjouter.equals(sc.nextLine()))
+				{
+					sc.close();
+					return false;
+				}
+			}
+
+			sc.close();
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		try
+		{
+			PrintWriter pw = new PrintWriter(new OutputStreamWriter(new FileOutputStream("../src/ListeMots.txt", true), "UTF8" ));
+
+			pw.println ( motAAjouter );
+			pw.close();
+		}
+		catch (Exception e){ e.printStackTrace(); }
+
+
+		return true;
 	}
 }
