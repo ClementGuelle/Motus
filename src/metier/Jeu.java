@@ -5,11 +5,6 @@ import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.Scanner;
-import java.io.PrintWriter;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
-
-import src.Controleur;
 
 public class Jeu 
 {
@@ -19,10 +14,9 @@ public class Jeu
 
 	private final int NB_ESSAIE;
 
-	private Controleur ctrl;
 	private String     motAChercher;
-	private String[]   tabMotJoueur;
-	private boolean    partieFini;
+	private int        tour;
+	private String     motJoueur;
 
 
 	/*--------------*/
@@ -32,14 +26,13 @@ public class Jeu
 	/**
 	 * Constructeur de la classe
 	 */
-	public Jeu( Controleur ctrl )
+	public Jeu()
 	{
 		this.NB_ESSAIE    = 4;
 
-		this.ctrl         = ctrl;
 		this.motAChercher = this.SelectionMotAleatoire();
-		this.tabMotJoueur = new String[NB_ESSAIE];
-		this.partieFini   = true;
+		this.tour         = 0;
+		this.motJoueur    = "";
 	}
 
 
@@ -122,10 +115,33 @@ public class Jeu
 		int     nbFoisCaratere        = 0;
 		int     nbFoisCaractereValide = 0;
 
+		this.motJoueur = motJoueur;
+
+		// Retourne null si le mot n'appartient pas à la liste
+		try
+		{
+			Scanner sc = new Scanner(new FileInputStream("../src/ListeMots.txt"), "UTF8");
+
+			while (sc.hasNextLine())
+			{
+				if (this.motJoueur.equals(sc.nextLine()))
+				{
+					sc.close();
+					return null;
+				}
+			}
+
+			sc.close();
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+
 		for (int i = 0; i < placementCaractere.length; i++)
 		{
 			// Met B à l'emplacement du caractere si les deux sont identiques
-			if(this.motAChercher.charAt(i) == motJoueur.charAt(i))
+			if(this.motAChercher.charAt(i) == this.motJoueur.charAt(i))
 				placementCaractere[i] = 'B';
 
 			else
@@ -133,7 +149,7 @@ public class Jeu
 				// Met I si le caractere est inexistant dans le mot
 				for (int j = 0; j < placementCaractere.length; j++) 
 				{
-					if( this.motAChercher.charAt(j) == motJoueur.charAt(i) )
+					if( this.motAChercher.charAt(j) == this.motJoueur.charAt(i) )
 						caractereExiste = true;
 				}
 					
@@ -146,13 +162,13 @@ public class Jeu
 				{
 					for (int j = 0; j < placementCaractere.length; j++)
 					{
-						if ( this.motAChercher.charAt(j) == motJoueur.charAt(i) )
+						if ( this.motAChercher.charAt(j) == this.motJoueur.charAt(i) )
 							nbFoisCaratere ++;
 					}
 
 					for (int j = 0; j < i; j++)
 					{
-						if ( motJoueur.charAt(j) == motJoueur.charAt(i) )
+						if ( this.motJoueur.charAt(j) == this.motJoueur.charAt(i) )
 							nbFoisCaratere --;
 					}
 
@@ -178,14 +194,14 @@ public class Jeu
 				// Permet de calculer le nombre de fois où la lettre est présente dans le mot
 				for (int j = 0; j < placementCaractere.length; j++)
 				{
-					if ( motJoueur.charAt(j) == motJoueur.charAt(i) )
+					if ( this.motJoueur.charAt(j) == this.motJoueur.charAt(i) )
 						nbFoisCaratere++;
 				}
 
 				// Permet de calculer le nombre de fois où la lettre est bien placé
 				for (int j = 0; j < placementCaractere.length; j++)
 				{
-					if ( motJoueur.charAt(j) == motJoueur.charAt(i) && placementCaractere[j] == 'B')
+					if ( this.motJoueur.charAt(j) == this.motJoueur.charAt(i) && placementCaractere[j] == 'B')
 						nbFoisCaractereValide ++;
 				}
 
@@ -198,21 +214,37 @@ public class Jeu
 			}
 		}
 
-		for (int i = 0; i < placementCaractere.length; i++) 
-		{
-			if ( placementCaractere[i] != 'B' )
-				partieFini = false;
-		}
-
-		if ( partieFini )
-			this.ctrl.FinPartieVictoire();
-
-		if ( !partieFini && this.tabMotJoueur[this.NB_ESSAIE] != "" )
-			this.ctrl.FinPartieDefaite();
+		this.tour ++;
 
 		return placementCaractere;
 	}
 
+
+	/**
+	 * Cette méthode détermine si la partie est fini en fonction du nombre de tour joué et/ou de si le mot est trouvé
+	 * @return vrai si la partie est fini
+	 */
+	public boolean PartieFini()
+	{
+
+		if ( this.tour > NB_ESSAIE )
+			return false;
+
+		for (int i = 0; i < this.motJoueur.length(); i++) 
+		{
+			if ( this.motAChercher.charAt(i) != this.motJoueur.charAt(i) )
+				return false;
+		}
+
+		return true;
+	}
+
+
+	/**
+	 * Cette méthode permet de pouvoir ajouter un mot dans la liste de mot.
+	 * @param motAAjouter le mot à ajouter à la liste.
+	 * @return si le mot à pu être ajouter ou non.
+	 */
 	public boolean AjoutMotListe(String motAAjouter)
 	{
 		try

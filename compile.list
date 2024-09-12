@@ -3,3 +3,5 @@
 ./src/metier/Jeu.java
 ./src/metier/Score.java
 
+./src/vue/FrameJeu.java
+./src/vue/PanelJeu.java
