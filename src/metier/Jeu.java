@@ -14,9 +14,10 @@ public class Jeu
 
 	private final int NB_ESSAIE;
 
+	private String[]   listeMotsJoueur;
 	private String     motAChercher;
-	private int        tour;
 	private String     motJoueur;
+	private int        tour;
 
 
 	/*--------------*/
@@ -28,11 +29,12 @@ public class Jeu
 	 */
 	public Jeu()
 	{
-		this.NB_ESSAIE    = 4;
+		this.NB_ESSAIE    = 5;
 
-		this.motAChercher = this.SelectionMotAleatoire();
-		this.tour         = 0;
-		this.motJoueur    = "";
+		this.listeMotsJoueur = new String[this.NB_ESSAIE];
+		this.motAChercher    = this.selectionMotAleatoire();
+		this.motJoueur       = "";
+		this.tour            = 1;
 	}
 
 
@@ -40,9 +42,11 @@ public class Jeu
 	/*    Getter    */
 	/*--------------*/
 
-	public String getMotATrouver() { return this.motAChercher; }
-
+	public String [] getListeMotsJoueur() { return this.listeMotsJoueur; }
+	public String    getMotATrouver    () { return this.motAChercher; }
 	
+	public int       getNbEssaie       () { return this.NB_ESSAIE; }
+
 	/*----------------*/
 	/* Autres Méthode */
 	/*----------------*/
@@ -51,7 +55,7 @@ public class Jeu
 	 * Cette méthode permet de choisir un mot aléatoirement dans la liste de mot prévu.
 	 * @return Le mot à trouver.
 	 */
-	public String SelectionMotAleatoire()
+	public String selectionMotAleatoire()
 	{
 
 		int    nbMots       = 0;
@@ -107,7 +111,7 @@ public class Jeu
 	 * @param motJoueur Le mot entrer par le joueur.
 	 * @return retourne un tableau pour chaque caractere du mot où cela dit si B : bonne place, M : mauvaise place, I : inexistant dans le mot.
 	 */
-	public char[] VerifEmplacementCaratere(String motJoueur)
+	public char[] verifEmplacementCaratere(String motJoueur)
 	{
 
 		char[]  placementCaractere    = new char[this.motAChercher.length()];
@@ -214,6 +218,7 @@ public class Jeu
 			}
 		}
 
+		this.listeMotsJoueur[this.tour --] = motJoueur;
 		this.tour ++;
 
 		return placementCaractere;
@@ -224,10 +229,10 @@ public class Jeu
 	 * Cette méthode détermine si la partie est fini en fonction du nombre de tour joué et/ou de si le mot est trouvé
 	 * @return vrai si la partie est fini
 	 */
-	public boolean PartieFini()
+	public boolean partieFini()
 	{
 
-		if ( this.tour > NB_ESSAIE )
+		if ( this.tour >= NB_ESSAIE )
 			return false;
 
 		for (int i = 0; i < this.motJoueur.length(); i++) 
