@@ -1,6 +1,7 @@
 package src.vue;
 
 import javax.swing.*;
+import javax.swing.event.*;
 
 import src.Controleur;
 
@@ -65,7 +66,7 @@ public class PanelJeu extends JPanel implements ActionListener, ItemListener
 
 		for (int i = 0; i < this.motJoueur.length; i++)
 		{
-			this.lettre[i] = new JTextField(1);
+			this.lettre[i] = new JTextField();
 			this.lettre[i].setFont(new Font("sansSherif", Font.PLAIN, 30));
 		}
 		
@@ -99,7 +100,13 @@ public class PanelJeu extends JPanel implements ActionListener, ItemListener
 		/* ACTIVATION DES COMPOSANTS          */
 		/* ---------------------------------- */
 
+		for (int i = 0; i < this.lettre.length; i++) 
+		{
+			this.lettre[i].getDocument().addDocumentListener(new LectureTextField());
+		}
+
 	}
+
 
 	public void actionPerformed(ActionEvent e)
 	{
@@ -110,4 +117,26 @@ public class PanelJeu extends JPanel implements ActionListener, ItemListener
 	{
 
 	}
+
+
+	private class LectureTextField implements DocumentListener 
+	{
+
+		public void insertUpdate(DocumentEvent e) 
+		{
+			for (int i = 0; i < lettre.length; i++) 
+			{
+				if (e.getDocument().getLength() > 1)
+				{
+					lettre[i + 1].requestFocusInWindow();
+				}
+			}
+
+		}
+
+		public void removeUpdate(DocumentEvent e) {}
+
+		public void changedUpdate(DocumentEvent e) {}
+	}
+	
 }
