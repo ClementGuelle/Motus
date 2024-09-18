@@ -1,14 +1,13 @@
 package src.vue;
 
 import javax.swing.*;
-import javax.swing.event.*;
 
 import src.Controleur;
 
 import java.awt.*;
 import java.awt.event.*;
 
-public class PanelJeu extends JPanel implements ActionListener, ItemListener 
+public class PanelJeu extends JPanel implements ActionListener, ItemListener, KeyListener 
 {
 
 	private Controleur ctrl;
@@ -20,6 +19,9 @@ public class PanelJeu extends JPanel implements ActionListener, ItemListener
 	private JLabel[][] lettreMot;
 
 	private JTextField[] lettre;
+
+	// Apparaît dans keyReleased
+	private boolean plusieursTouches;
 
 	public PanelJeu(Controleur ctrl)
 	{
@@ -38,6 +40,8 @@ public class PanelJeu extends JPanel implements ActionListener, ItemListener
 		this.lettreMot      = new JLabel[this.ctrl.getNbEssaie()][this.ctrl.getNbLettreMot()];
 
 		this.lettre         = new JTextField[this.ctrl.getNbLettreMot()];
+
+		this.plusieursTouches = false;
 
 		
 		// Fait les espaces entre les cases
@@ -68,6 +72,9 @@ public class PanelJeu extends JPanel implements ActionListener, ItemListener
 		{
 			this.lettre[i] = new JTextField();
 			this.lettre[i].setFont(new Font("sansSherif", Font.PLAIN, 30));
+
+			if ( i != 0)
+				this.lettre[i].setEditable(false);
 		}
 		
 		/* ---------------------------------- */
@@ -102,15 +109,15 @@ public class PanelJeu extends JPanel implements ActionListener, ItemListener
 
 		for (int i = 0; i < this.lettre.length; i++) 
 		{
-			this.lettre[i].getDocument().addDocumentListener(new LectureTextField());
+			this.lettre[i].addKeyListener(this);
 		}
+
 
 	}
 
 
 	public void actionPerformed(ActionEvent e)
 	{
-
 	}
 
 	public void itemStateChanged(ItemEvent e)
@@ -118,25 +125,88 @@ public class PanelJeu extends JPanel implements ActionListener, ItemListener
 
 	}
 
-
-	private class LectureTextField implements DocumentListener 
+	public void keyTyped(KeyEvent e)
 	{
+		
+	}
 
-		public void insertUpdate(DocumentEvent e) 
+
+	@Override
+	public void keyPressed(KeyEvent e)
+	{
+		for (int i = 0; i <= (this.lettre.length - 1); i++)
 		{
-			for (int i = 0; i < lettre.length; i++) 
+			if (this.lettre[i].isEditable() && this.lettre[i].getText().length() >= 1 && e
+					.getKeyChar() != KeyEvent.VK_BACK_SPACE)
 			{
-				if (e.getDocument().getLength() > 1)
-				{
-					lettre[i + 1].requestFocusInWindow();
-				}
+				this.plusieursTouches = true;
+				JOptionPane.showMessageDialog(null, "Vous ne pouvez pas mettre plusieurs caractère sur une seule case",
+						"Trop de caractère", JOptionPane.WARNING_MESSAGE);
 			}
+			if (this.lettre[i].isEditable() && this.lettre[i].getText().length() >= 1 )
+				this.plusieursTouches = false;
 
 		}
 
-		public void removeUpdate(DocumentEvent e) {}
 
-		public void changedUpdate(DocumentEvent e) {}
+	}
+
+
+	@Override
+	public void keyReleased(KeyEvent e)
+	{
+
+		int indice = -1;
+
+		String mot = "";
+	
+
+		if ( this.plusieursTouches )
+			return;
+
+
+		for (int i = 0; i <= (this.lettre.length - 1); i++)
+		{
+			if (this.lettre[i].isEditable())
+				indice = i;
+		}
+
+		if ( e.getKeyChar() == KeyEvent.VK_BACK_SPACE && this.lettre[indice].getText().length() == 0 )
+		{
+			if (indice == 0)
+			{
+				return;
+			}
+			else
+			{
+				this.lettre[indice].setEditable(false);
+				this.lettre[indice - 1].setEditable(true);
+				this.lettre[indice - 1].requestFocusInWindow();
+				this.lettre[indice - 1].setText("");
+			}
+		}
+		else
+		{
+			if (indice == (this.lettre.length - 1))
+			{
+				this.lettre[indice].setEditable(false);
+
+				for (int i = 0; i < (this.lettre.length - 1); i++)
+				{
+					mot += this.lettre[i].getText();
+				}
+
+				ctrl.verifEmplacementCaratere(mot);
+			}
+			else
+			{
+				this.lettre[indice]    .setEditable(false);
+				this.lettre[indice + 1].setEditable(true);
+				this.lettre[indice + 1].requestFocusInWindow();
+			}
+		}
+
+		this.plusieursTouches = false;
 	}
 	
 }

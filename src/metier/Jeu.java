@@ -142,7 +142,7 @@ public class Jeu
 		}
 
 
-		for (int i = 0; i < placementCaractere.length; i++)
+		for (int i = 0; i < (placementCaractere.length-1); i++)
 		{
 			// Met B à l'emplacement du caractere si les deux sont identiques
 			if(this.motAChercher.charAt(i) == this.motJoueur.charAt(i))
@@ -151,7 +151,7 @@ public class Jeu
 			else
 			{
 				// Met I si le caractere est inexistant dans le mot
-				for (int j = 0; j < placementCaractere.length; j++) 
+				for (int j = 0; j < (placementCaractere.length-1); j++) 
 				{
 					if( this.motAChercher.charAt(j) == this.motJoueur.charAt(i) )
 						caractereExiste = true;
@@ -164,7 +164,7 @@ public class Jeu
 				// Met M si le caractere est à la mauvaise place dans le mot ( et avec le bon nombre de fois où il est dans le mot )
 				else
 				{
-					for (int j = 0; j < placementCaractere.length; j++)
+					for (int j = 0; j < (placementCaractere.length-1); j++)
 					{
 						if ( this.motAChercher.charAt(j) == this.motJoueur.charAt(i) )
 							nbFoisCaratere ++;
@@ -190,20 +190,20 @@ public class Jeu
 		}
 
 		// Apres avoir fini le tour de tous les caracteres dans le mot il y a des erreurs avec les M alors que toutes les lettres peuvent être bien placé
-		for (int i = 0; i < placementCaractere.length; i++)
+		for (int i = 0; i < (placementCaractere.length-1); i++)
 		{
 			if (placementCaractere[i] == 'M')
 			{
 
 				// Permet de calculer le nombre de fois où la lettre est présente dans le mot
-				for (int j = 0; j < placementCaractere.length; j++)
+				for (int j = 0; j < (placementCaractere.length-1); j++)
 				{
 					if ( this.motJoueur.charAt(j) == this.motJoueur.charAt(i) )
 						nbFoisCaratere++;
 				}
 
 				// Permet de calculer le nombre de fois où la lettre est bien placé
-				for (int j = 0; j < placementCaractere.length; j++)
+				for (int j = 0; j < (placementCaractere.length-1); j++)
 				{
 					if ( this.motJoueur.charAt(j) == this.motJoueur.charAt(i) && placementCaractere[j] == 'B')
 						nbFoisCaractereValide ++;
@@ -235,9 +235,9 @@ public class Jeu
 		if ( this.tour >= NB_ESSAIE )
 			return false;
 
-		for (int i = 0; i < this.motJoueur.length(); i++) 
+		for (int i = 0; i < (this.motJoueur.length()-1); i++) 
 		{
-			if ( this.motAChercher.charAt(i) != this.motJoueur.charAt(i) )
+			if ( this.motAChercher.charAt(i) != (this.motJoueur.charAt(i)-1) )
 				return false;
 		}
 
